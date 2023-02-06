@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>웹소켓</title>
+</head>
+
+<body>
+    <h1>PKI 인증서 발급 페이지</h1>
+
+    <!-- 버튼 2개 생성 -->
+    <input id="uid_send" type="text">
+    <button id="btn_send">UID 전송</button>
+    <button id="btn_close">연결 끊기</button>
+    <div></div>
+    <a id="ip"></a>
+    <a id="ca"></a>
+    <a id="key"></a>
+    <a id="crt"></a>
+</body>
+<script>
+    // 1. 웹소켓 클라이언트 객체 생성
+    const webSocket = new WebSocket("ws://211.40.224.24:3000");
+
+    // 2. 웹소켓 이벤트 처리
+    // 2-1) 연결 이벤트 처리
+    webSocket.onopen = () => {
+        console.log("웹소켓서버와 연결 성공");
+    };
+
+    var url;
+    // 2-2) 메세지 수신 이벤트 처리
+    webSocket.onmessage = (event) => {
+        console.log(event.data);
+        // alert(event.data);
+
+
+        // const downloadUrl = window.URL.createObjectURL(event.data);
+        // const anchorElement = document.createElement('a');
+        // document.body.appendChild(anchorElement);
+        // anchorElement.download = 'some file'; // a tag에 download 속성을 줘서 클릭할 때 다운로드가 일어날 수 있도록 하기
+        // anchorElement.href = downloadUrl; // href에 url 달아주기
+
+        // anchorElement.click(); // 코드 상으로 클릭을 해줘서 다운로드를 트리거
+    }
+    // 2-3) 연결 종료 이벤트 처리
+    webSocket.onclose = function () {
+        console.log("서버 웹소켓 연결 종료");
+    }
+
+    console.log(event)
+    // 2-4) 에러 발생 이벤트 처리
+    webSocket.onerror = function (event) {
+    }
+
+    // 3. 버튼 클릭 이벤트 처리
+    // 3-1) 웹소켓 서버에게 메세지 보내기
+    document.getElementById("btn_send").onclick = function () {
+        if (webSocket.readyState === webSocket.OPEN) { // 연결 상태 확인
+            var gett = document.getElementById('uid_send').value;
+            webSocket.send(gett);
+            document.getElementById("ip").innerHTML = '인증서 발급중 ...';
+            // setTimeout(() => {
+            //     spread(gett);
+            // }, 12000
+            // );
+
+        } else {
+            alert("연결된 웹소켓 서버가 없습니다.");
+        }
+    }
+
+    // 3-2) 웹소켓 서버와 연결 끊기
+    document.getElementById("btn_close").onclick = function () {
+        if (webSocket.readyState === webSocket.OPEN) { // 연결 상태 확인
+            webSocket.close(); // 연결 종료
+        } else {
+            alert("연결된 웹소켓 서버가 없습니다.");
+        }
+    }
+
+    // function spread(gett) {
+    //     document.getElementById("ca").innerHTML = ca;
+    //     document.getElementById("key").innerHTML = key;
+    //     document.getElementById("crt").innerHTML = crt;
+    //     var ca = findca(gett);
+    //     var key = findkey(gett);
+    //     var crt = findcrt(gett);
+    // }
+
+</script>
+
+</html>
